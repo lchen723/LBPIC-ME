@@ -13,3 +13,5 @@ A list of files:
 9. SIMEXBoost_normal.RData: A workspace that contains the estimation results from SIMEXBoost_normal.R.
 10. k-fold SIMEXBoost for tooth data.R: An script for real data analysis (for the dataset "tandmob2.csv") based on the proposed method.
 11. tandmob2.RData: A dataset for the signal tandmobiel study.
+
+ps. To clealy see html and files in .rar, one should follow the route "<> Code --> Download ZIP" to download all files.
