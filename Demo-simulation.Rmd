@@ -1,0 +1,72 @@
+---
+title: "Demo-simulation"
+author: "Li-Pang Chen and Bangxu Qiu"
+date: "2023-06-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+In this R Markdown, we demonstrate simulation studies and consider the estimation based on the proposed method (with measurement error correction) and the naive method (without measurement error correction) in the main text. Both estimation methods can be implemented by the R package SIMEXBoost.
+
+We first demonstrate the naive method, which can be implemented by the function Boost_VSE in the R package SIMEXBoost. Next, we demonstrate the proposed method with correction of measurement error, which can be implemented by the function SIMEXBoost in the R package.  
+
+```{r cars}
+library(SIMEXBoost)
+library(MASS)
+
+### Naive method (without measurement error correction)
+betahat_naive = NULL
+for(K in 1:10) {
+
+X1 = matrix(rnorm((100)*400),nrow=400,ncol=100,byrow=TRUE)
+data=ME_Data(X1,beta=c(1,1,1,rep(0,dim(X1)[2]-3)),pr0=0.5,
+type="AFT-normal",
+sigmae=diag(0.1,dim(X1)[2]))
+Y = data$response
+Xstar = data$ME_covariate
+
+B1 = Boost_VSE(Y,Xstar,type="AFT-normal",Iter=20)$BetaHat
+
+
+betahat_naive = rbind(betahat_naive,B1)
+
+}
+
+colMeans(betahat_naive)
+
+#######################
+
+### Proposed method (with measurement error correction)
+betahat = NULL
+for(K in 1:10) {
+
+X1 = matrix(rnorm((100)*400),nrow=400,ncol=100,byrow=TRUE)
+data=ME_Data(X1,beta=c(1,1,1,rep(0,dim(X1)[2]-3)),pr0=0.5,
+type="AFT-normal",
+sigmae=diag(0.1,dim(X1)[2]))
+Y = data$response
+Xstar = data$ME_covariate
+
+B1 = SIMEXBoost(Y,Xstar,B=50,zeta=c(0,0.25,0.5,0.75,1),
+type="AFT-normal",Iter=20,sigmae=diag(0.1,dim(X1)[2]))$BetaHatCorrect
+
+
+betahat = rbind(betahat,B1)
+
+}
+
+
+
+SIMEXBoostBeta = colMeans(betahat)
+SIMEXBoostBeta[which(abs(SIMEXBoostBeta)<0.09)]=0
+SIMEXBoostBeta
+```
+
+
+
+
